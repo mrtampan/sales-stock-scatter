@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Shortage Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="myDiv" style="width: 100%; height: 500px;"></div>
+    <script>
+        // Data
+        const data = {
+            items: ['Item A', 'Item B', 'Item C', 'Item D', 'Item E'],
+            stock: [50, 20, 30, 40, 15],
+            sales: [30, 25, 20, 45, 15]
+        };
+
+        // Menentukan posisi berdasarkan kondisi
+        const positions = data.stock.map((stock, index) => {
+            if (stock < data.sales[index]) return 1; // Posisi di atas
+            if (stock === data.sales[index]) return 0; // Posisi di garis tengah
+            return -1; // Posisi di bawah
+        });
+
+        // Menyiapkan data untuk plotly
+        const trace = {
+            x: data.items,
+            y: positions.map(pos => (pos === 1 ? 1 : (pos === -1 ? -1 : 0))),
+            mode: 'markers+text',
+            type: 'scatter',
+            marker: {
+                size: 10,
+                color: positions.map(pos => (pos === 1 ? 'red' : (pos === 0 ? 'green' : 'blue')))
+            },
+            text: data.items.map((item, index) => `Stock: ${data.stock[index]}<br>Sales: ${data.sales[index]}`),
+            textposition: positions.map(pos => (pos === 1 ? 'bottom center' : (pos === 0 ? 'top center' : 'top center'))),
+            name: 'Stock vs Sales'
+        };
+
+        const line = {
+            x: data.items,
+            y: new Array(data.items.length).fill(0),
+            mode: 'lines',
+            type: 'scatter',
+            line: {
+                color: 'black',
+                dash: 'dash'
+            },
+            name: 'Garis Tengah'
+        };
+
+        // Menyiapkan layout
+        const layout = {
+            title: 'Visualisasi Ketersediaan Stok vs Penjualan',
+            xaxis: {
+                title: 'Item'
+            },
+            // yaxis: {
+            //     title: 'Posisi',
+            //     tickvals: [-1, 0, 1],
+            //     ticktext: ['Stok > Penjualan', 'Stok = Penjualan', 'Stok < Penjualan'],
+            //     range: [-2, 2]
+            // },
+            // showlegend: true
+        };
+
+        // Menampilkan grafik
+        Plotly.newPlot('myDiv', [trace, line], layout);
+    </script>
+</body>
+</html>
